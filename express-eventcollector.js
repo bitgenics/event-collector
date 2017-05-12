@@ -1,6 +1,6 @@
 
 const wrapper = (EventCollector) => {
-  const createMiddleware = (meta) => {
+  return createMiddleware = (meta) => {
     return (req, res, next) => {
       const req_meta = {
         hostname: req.hostname,
