@@ -1,6 +1,6 @@
 
 const wrapper = (EventCollector) => {
-  return createMiddleware = (meta) => {
+  return createMiddleware = (onEnd, meta) => {
     return (req, res, next) => {
       const req_meta = {
         hostname: req.hostname,
@@ -15,7 +15,7 @@ const wrapper = (EventCollector) => {
         };
         req.eventcollector.end(res_meta);
         req.eventcollector.addError('The underlying connection was terminated before response.end() was called or able to flush.');
-        console.log(JSON.stringify(req.eventcollector, null, 2));
+        onEnd(req.eventcollector);
       });
       res.on('finish', () => {
         const res_meta = {
@@ -25,7 +25,7 @@ const wrapper = (EventCollector) => {
             res_cacheHeader: res.getHeader('cache-control')
         };
         req.eventcollector.end(res_meta);
-        console.log(JSON.stringify(req.eventcollector, null, 2));
+        onEnd(req.eventcollector);
       });
       next();
     }
