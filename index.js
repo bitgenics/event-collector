@@ -9,7 +9,7 @@ class EventCollector {
 		this.time = Date.now();
 		this.start_hr = process.hrtime();
 		this.jobs = {};
-		this.errs = [];
+		this.errors = [];
 		this.errorCount = 0;
 		this.duplicateIds = {};
 	}
@@ -19,7 +19,7 @@ class EventCollector {
 	}
 
 	addError(error) {
-		this.errs.push(error);
+		this.errors.push(error);
 		this.errorCount++
 	}
 
