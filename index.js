@@ -11,6 +11,7 @@ class EventCollector {
 		this.jobs = {};
 		this.errs = [];
 		this.errorCount = 0;
+		this.duplicateIds = {};
 	}
 
 	addMeta(meta) {
@@ -22,24 +23,31 @@ class EventCollector {
 		this.errorCount++
 	}
 
-	startJob(type, meta) {
-		const start_hr = process.hrtime();
+	_getId(type) {
 		if(this.jobs[type]) {
-			this.addError(`EventCollector - Job: '${type}' was already started`);
+			const counter = duplicateIds[type] ? 1 : duplicateIds[type]++;
+			return `${type}-${counter}`;
 		} else {
-			const job = {start_hr, startAtMs: toMs(start_hr, this.start_hr)};
-			Object.assign(job, meta);
-			this.jobs[type] = job
+			return type;
 		}
 	}
 
-	endJob(type, meta) {
-		const job = this.jobs[type];
+	startJob(type, meta) {
+		const start_hr = process.hrtime();
+		const job = {start_hr, startAtMs: toMs(start_hr, this.start_hr)};
+		Object.assign(job, meta);
+		const id = this._getId(type);
+		this.jobs[id] = job
+		return id;
+	}
+
+	endJob(id, meta) {
+		const job = this.jobs[id];
 		if(job) {
 			job.durationInMs = toMs(process.hrtime(), job.start_hr);
 			delete job.start_hr;
 		} else {
-			this.addError(`EventCollector - Job: '${type}' was not started`);
+			this.addError(`EventCollector - Job: '${id}' was not started`);
 		}
 	}
 
@@ -47,6 +55,7 @@ class EventCollector {
 		this.totalDuration = toMs(process.hrtime(), this.start_hr);
 		Object.assign(this.meta, meta);
 		delete this.start_hr;
+		delete this.duplicateIds;
 	}
 }
 
