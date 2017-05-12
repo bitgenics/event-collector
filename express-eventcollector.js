@@ -20,9 +20,9 @@ const wrapper = (EventCollector) => {
       res.on('finish', () => {
         const res_meta = {
             statusCode: res.statusCode,
-            contentType: res.getHeader('content-type'),
-            contentEncoding: res.getHeader('content-encoding')
-            cacheHeader: res.getHeader('cache-control')
+            res_contentType: res.getHeader('content-type'),
+            res_contentEncoding: res.getHeader('content-encoding'),
+            res_cacheHeader: res.getHeader('cache-control')
         };
         req.eventcollector.end(res_meta);
         console.log(JSON.stringify(req.eventcollector, null, 2));
