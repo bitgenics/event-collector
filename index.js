@@ -6,7 +6,8 @@ const toMs = (end, start) => {
 class EventCollector {
 	constructor(meta) {
 		this.meta = meta;
-		this.time = Date.now();
+		this.time_epoch = Date.now();
+		this.time_date = new Date();
 		this.start_hr = process.hrtime();
 		this.jobs = {};
 		this.errors = [];
