@@ -3,9 +3,9 @@ const wrapper = (EventCollector) => {
   return createMiddleware = (meta, onEnd) => {
     return (req, res, next) => {
       const req_meta = {
-        hostname: req.hostname,
-        url: req.url,
-        method: req.method,
+        req_hostname: req.hostname,
+        req_url: req.url,
+        req_method: req.method,
       };
       req.eventcollector = new EventCollector(req_meta);
       req.eventcollector.addMeta(meta);
@@ -19,7 +19,7 @@ const wrapper = (EventCollector) => {
       });
       res.on('finish', () => {
         const res_meta = {
-            statusCode: res.statusCode,
+            res_statusCode: res.statusCode,
             res_contentType: res.getHeader('content-type'),
             res_contentEncoding: res.getHeader('content-encoding'),
             res_cacheHeader: res.getHeader('cache-control')
