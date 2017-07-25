@@ -26,8 +26,9 @@ class EventCollector {
 
 	_getId(type) {
 		if (this.jobs[type]) {
-			const counter = this.duplicateIds[type] ? 1 : this.duplicateIds[type]++;
-			return `${type}-${counter}`;
+		    // Initialise or update duplicate id count for 'type'
+		    this.duplicateIds[type] = !this.duplicateIds[type] ? 1 : this.duplicateIds[type] + 1;
+			return `${type}-${this.duplicateIds[type]}`;
 		} else {
 			return type;
 		}
