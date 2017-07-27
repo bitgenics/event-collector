@@ -24,12 +24,12 @@ class LogWritable extends Writable {
 class EventCollector {
 	constructor(meta) {
 		this.event = {
-			meta: meta || {};
-			time_epoch: Date.now();
-			time_date: new Date();
-			jobs: {};
-			errors: [];
-			errorCount: 0;
+			meta: meta || {},
+			time_epoch: Date.now(),
+			time_date: new Date(),
+			jobs: {},
+			errors: [],
+			errorCount: 0
 		}
 		this.start_hr = process.hrtime();
 		this.duplicateIds = {};
@@ -41,12 +41,13 @@ class EventCollector {
 	}
 
 	addError(error) {
-		this.event.errors.push(error);
+		console.log(error);
+		this.event.errors.push({message: error.message, stack: error.stack });
 		this.event.errorCount++
 	}
 
 	_getId(type) {
-		if(this.jobs[type]) {
+		if(this.event.jobs[type]) {
 		    // Initialise or update duplicate id count for 'type'
 		    this.duplicateIds[type] = !this.duplicateIds[type] ? 1 : this.duplicateIds[type] + 1;
 			return `${type}-${this.duplicateIds[type]}`;
@@ -97,7 +98,7 @@ class EventCollector {
 
 	end(meta) {
 		this.totalDuration = toMs(process.hrtime(), this.start_hr);
-		Object.assign(this.meta, meta);
+		Object.assign(this.event.meta, meta);
 	}
 }
 
