@@ -1,6 +1,24 @@
+const { Writable } = require('stream');
+
 const toMs = (end, start) => {
 	const ms = (1000 * (end[0] - start[0])) + ((end[1] - start[1])/1000000);
 	return Math.round(ms*1000)/1000;
+}
+
+class LogWritable extends Writable {
+	constructor(eventcollector, logLevel) {
+		super({
+			decodeStrings: false,
+			objectMode: true
+		});
+		this.collector = eventcollector;
+		this.logLevel = logLevel;
+	}
+
+	_write(chunk, encoding, callback) {
+		this.collector.log(this.logLevel, chunk);
+		callback();
+	}
 }
 
 class EventCollector {
@@ -13,6 +31,7 @@ class EventCollector {
 		this.errors = [];
 		this.errorCount = 0;
 		this.duplicateIds = {};
+		this.logs = [];
 	}
 
 	addMeta(meta) {
@@ -51,6 +70,19 @@ class EventCollector {
 		} else {
 			this.addError(`EventCollector - Job: '${id}' was not started`);
 		}
+	}
+
+	logStdOut(){
+		return new LogWritable(this, 'LOG');
+	}
+
+	logStdErr(){
+		return new LogWritable(this, 'ERR');
+	}
+
+	log(logLevel, log) {
+		const atMs = toMs(process.hrtime(), this.start_hr);
+		this.logs.push({logLevel, atMs, log});
 	}
 
 	end(meta) {
