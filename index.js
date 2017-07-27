@@ -23,7 +23,7 @@ class LogWritable extends Writable {
 
 class EventCollector {
 	constructor(meta) {
-		this.meta = meta;
+		this.meta = meta || {};
 		this.time_epoch = Date.now();
 		this.time_date = new Date();
 		this.start_hr = process.hrtime();
