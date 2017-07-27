@@ -1,9 +1,9 @@
 const { Writable } = require('stream');
 
 const toMs = (end, start) => {
-	const ms = (1000 * (end[0] - start[0])) + ((end[1] - start[1])/1000000);
-	return Math.round(ms*1000)/1000;
-}
+	const ms = (1000 * (end[0] - start[0])) + ((end[1] - start[1]) / 1000000);
+	return Math.round(ms * 1000) / 1000;
+};
 
 class LogWritable extends Writable {
 	constructor(eventcollector, logLevel) {
@@ -47,9 +47,9 @@ class EventCollector {
 
 	_getId(type) {
 		if(this.jobs[type]) {
-			const counter = this.duplicateIds[type] ? 1 : this.duplicateIds[type]++;
-			this.duplicateIds[type] = counter;
-			return `${type}-${counter}`;
+		    // Initialise or update duplicate id count for 'type'
+		    this.duplicateIds[type] = !this.duplicateIds[type] ? 1 : this.duplicateIds[type] + 1;
+			return `${type}-${this.duplicateIds[type]}`;
 		} else {
 			return type;
 		}
@@ -57,7 +57,7 @@ class EventCollector {
 
 	startJob(type, meta) {
 		const start_hr = process.hrtime();
-		const job = {start_hr, startAtMs: toMs(start_hr, this.start_hr)};
+		const job = { start_hr, startAtMs: toMs(start_hr, this.start_hr) };
 		Object.assign(job, meta);
 		const id = this._getId(type);
 		this.event.jobs[id] = job
