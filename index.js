@@ -23,30 +23,32 @@ class LogWritable extends Writable {
 
 class EventCollector {
 	constructor(meta) {
-		this.meta = meta || {};
-		this.time_epoch = Date.now();
-		this.time_date = new Date();
+		this.event = {
+			meta: meta || {};
+			time_epoch: Date.now();
+			time_date: new Date();
+			jobs: {};
+			errors: [];
+			errorCount: 0;
+		}
 		this.start_hr = process.hrtime();
-		this.jobs = {};
-		this.errors = [];
-		this.errorCount = 0;
 		this.duplicateIds = {};
 		this.logs = [];
 	}
 
 	addMeta(meta) {
-		Object.assign(this.meta, meta);
+		Object.assign(this.event.meta, meta);
 	}
 
 	addError(error) {
-		this.errors.push(error);
-		this.errorCount++
+		this.event.errors.push(error);
+		this.event.errorCount++
 	}
 
 	_getId(type) {
 		if(this.jobs[type]) {
-			const counter = duplicateIds[type] ? 1 : duplicateIds[type]++;
-			duplicateIds[type] = counter;
+			const counter = this.duplicateIds[type] ? 1 : this.duplicateIds[type]++;
+			this.duplicateIds[type] = counter;
 			return `${type}-${counter}`;
 		} else {
 			return type;
@@ -58,12 +60,12 @@ class EventCollector {
 		const job = {start_hr, startAtMs: toMs(start_hr, this.start_hr)};
 		Object.assign(job, meta);
 		const id = this._getId(type);
-		this.jobs[id] = job
+		this.event.jobs[id] = job
 		return id;
 	}
 
 	endJob(id, meta) {
-		const job = this.jobs[id];
+		const job = this.event.jobs[id];
 		if(job) {
 			job.durationInMs = toMs(process.hrtime(), job.start_hr);
 			delete job.start_hr;
@@ -85,11 +87,17 @@ class EventCollector {
 		this.logs.push({logLevel, atMs, log});
 	}
 
+	getEvent() {
+		return this.event;
+	}
+
+	getLogs() {
+		return this.logs;
+	}
+
 	end(meta) {
 		this.totalDuration = toMs(process.hrtime(), this.start_hr);
 		Object.assign(this.meta, meta);
-		delete this.start_hr;
-		delete this.duplicateIds;
 	}
 }
 
