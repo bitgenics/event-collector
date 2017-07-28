@@ -67,9 +67,13 @@ class EventCollector {
 
 	endJob(id, meta) {
 		const job = this.event.jobs[id];
-		if(job) {
-			job.durationInMs = toMs(process.hrtime(), job.start_hr);
-			delete job.start_hr;
+		if (job) {
+			if (job.start_hr) {
+                job.durationInMs = toMs(process.hrtime(), job.start_hr);
+                delete job.start_hr;
+			} else {
+				this.addError(`EventCollector - Job: '${id}' was already ended`);
+			}
 		} else {
 			this.addError(`EventCollector - Job: '${id}' was not started`);
 		}
