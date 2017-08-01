@@ -30,7 +30,7 @@ class EventCollector {
 			jobs: {},
 			errors: [],
 			errorCount: 0
-		}
+		};
 		this.start_hr = process.hrtime();
 		this.duplicateIds = {};
 		this.logs = [];
@@ -61,13 +61,14 @@ class EventCollector {
 		const job = { start_hr, startAtMs: toMs(start_hr, this.start_hr) };
 		Object.assign(job, meta);
 		const id = this._getId(type);
-		this.event.jobs[id] = job
+		this.event.jobs[id] = job;
 		return id;
 	}
 
 	endJob(id, meta) {
 		const job = this.event.jobs[id];
 		if (job) {
+            Object.assign(job, meta);
 			if (job.start_hr) {
                 job.durationInMs = toMs(process.hrtime(), job.start_hr);
                 delete job.start_hr;
