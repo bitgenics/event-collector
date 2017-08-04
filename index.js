@@ -1,6 +1,7 @@
 const { Writable } = require('stream');
 
 const toMs = (end, start) => {
+	if(!(end && start)) { return -1 }
 	const ms = (1000 * (end[0] - start[0])) + ((end[1] - start[1]) / 1000000);
 	return Math.round(ms * 1000) / 1000;
 };

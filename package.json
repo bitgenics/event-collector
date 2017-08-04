@@ -1,6 +1,6 @@
 {
   "name": "event-collector",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Allows you to collect meta-data and time different phases in the context of a bigger event such as a request",
   "main": "index.js",
   "repository": "git@github.com:bitgenics/event-collector.git",
