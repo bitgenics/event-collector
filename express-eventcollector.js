@@ -11,10 +11,10 @@ const wrapper = (EventCollector) => {
       req.eventcollector.addMeta(meta);
       res.on('close', () => {
         const res_meta = {
-            statusCode: res.statusCode,
+            res_statusCode: res.statusCode,
+            res_conn_status: 'connection terminated'
         };
         req.eventcollector.end(res_meta);
-        req.eventcollector.addError('The underlying connection was terminated before response.end() was called or able to flush.');
         onEnd(req.eventcollector);
       });
       res.on('finish', () => {
