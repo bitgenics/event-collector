@@ -6,6 +6,7 @@ const wrapper = (EventCollector) => {
         req_hostname: req.hostname,
         req_url: req.url,
         req_method: req.method,
+        req_useragent: req.headers['user-agent'];
       };
       req.eventcollector = new EventCollector(req_meta);
       req.eventcollector.addMeta(meta);
