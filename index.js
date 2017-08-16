@@ -42,8 +42,8 @@ class EventCollector {
 	}
 
 	addError(error) {
-		console.log(error);
-		this.event.errors.push({message: error.message, stack: error.stack });
+		const err = error && error.stack ? {message: error.message, stack: error.stack } : error;
+		this.event.errors.push(err);
 		this.event.errorCount++
 	}
 
