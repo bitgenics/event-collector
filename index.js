@@ -32,6 +32,7 @@ class EventCollector {
 			errors: [],
 			errorCount: 0
 		};
+		this.open_jobs = new Set(),
 		this.start_hr = process.hrtime();
 		this.duplicateIds = {};
 		this.logs = [];
@@ -42,7 +43,10 @@ class EventCollector {
 	}
 
 	addError(error) {
-		const err = error && error.stack ? {message: error.message, stack: error.stack } : error;
+		const message = error.message || error;
+		const time = toMs(process.hrtime(), this.start_hr);
+		const err = { message, time, open_jobs: Array.from(this.open_jobs) };
+		if(error.stack) { err.stack = error.stack };
 		this.event.errors.push(err);
 		this.event.errorCount++
 	}
@@ -63,6 +67,7 @@ class EventCollector {
 		Object.assign(job, meta);
 		const id = this._getId(type);
 		this.event.jobs[id] = job;
+		this.open_jobs.add(id);
 		return id;
 	}
 
@@ -70,6 +75,7 @@ class EventCollector {
 		const job = this.event.jobs[id];
 		if (job) {
             Object.assign(job, meta);
+            this.open_jobs.delete(id);
 			if (job.start_hr) {
                 job.durationInMs = toMs(process.hrtime(), job.start_hr);
                 delete job.start_hr;
@@ -103,6 +109,7 @@ class EventCollector {
 	}
 
 	end(meta) {
+		this.open_jobs.forEach((id) => { delete this.event.jobs[id].start_hr });
 		this.totalDuration = toMs(process.hrtime(), this.start_hr);
 		Object.assign(this.event.meta, meta);
 	}
