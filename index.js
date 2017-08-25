@@ -109,8 +109,8 @@ class EventCollector {
 	}
 
 	end(meta) {
-		this.open_jobs.forEach((id) => { delete this.event.jobs[id].start_hr });
-		this.totalDuration = toMs(process.hrtime(), this.start_hr);
+		this.open_jobs.forEach((id) => { this.endJob(id) });
+		this.event.totalDuration = toMs(process.hrtime(), this.start_hr);
 		Object.assign(this.event.meta, meta);
 	}
 }
