@@ -6,7 +6,6 @@ const wrapper = (EventCollector) => {
         req_hostname: req.hostname,
         req_url: req.url,
         req_method: req.method,
-        req_useragent: req.headers['user-agent']
       };
       req.eventcollector = new EventCollector(req_meta);
       req.eventcollector.addMeta(meta);
@@ -16,7 +15,7 @@ const wrapper = (EventCollector) => {
           res_conn_status: 'connection terminated'
         };
         req.eventcollector.end(res_meta);
-        onEnd(req.eventcollector);
+        onEnd(req.eventcollector, req, res);
       });
       res.on('finish', () => {
         const res_meta = {
@@ -26,7 +25,7 @@ const wrapper = (EventCollector) => {
           res_cacheHeader: res.getHeader('cache-control')
         };
         req.eventcollector.end(res_meta);
-        onEnd(req.eventcollector);
+        onEnd(req.eventcollector, req, res);
       });
       next();
     }
